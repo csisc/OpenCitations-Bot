@@ -188,8 +188,10 @@ with open('batch.csv', 'w', newline='') as csvfile:
                                     }"""
                                     try:
                                         results4 = get_results(endpoint_url, query4)
+                                        sn = 1
                                         for rr in results4:
-                                            if (result3["source_title"]== rr["label"]["value"]): spamwriter.writerow(["LAST","P50",rr["x"]["value"][31:255],"S248","Q29279836"])
+                                            if (result3["source_title"]== rr["label"]["value"]): spamwriter.writerow(["LAST","P50",rr["x"]["value"][31:255],"P1545",sn,"S248","Q29279836"])
+                                            sn += 1
                                     except:
                                         print("Matter7")
                             except:
