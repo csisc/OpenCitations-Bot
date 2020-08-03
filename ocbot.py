@@ -109,6 +109,8 @@ with open('batch.csv', 'w', newline='') as csvfile:
                                         ?x wdt:P31 ?y.
                                         ?y wdt:P279 wd:Q1235234.
                                       }
+                                      UNION
+                                      { ?x wdt:P31 wd:Q1143604. }
                                       ?x rdfs:label ?label.
                                       FILTER((LANG(?label)) = "en")
                                       FILTER(STRSTARTS(?label, """+srcc+"""))
