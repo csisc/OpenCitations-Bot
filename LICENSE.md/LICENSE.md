@@ -1,1 +1,1 @@
-The work is issued under CC BY-NC-SA 4.0 License.
+The work is issued under CC BY-NC-SA 4.0 License. This license allows users to freely share and adapt this Python code in condition of the non-use of this effort in commercial purposes and the attribution of the work to its original authors. 
