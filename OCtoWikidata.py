@@ -25,7 +25,7 @@ with open("output.tsv", "w") as f1:
               f1.write(wid+"\tP2860\t"+wid1+"\tS248\tQ107507940\n")
               f1.flush()
           else:
-              f1.write("MISSING\t"+wid+"\t"+i+"\n")
+              f1.write("MISSING\t"+i+"\n")
               f1.flush()
       print(s1)
   
