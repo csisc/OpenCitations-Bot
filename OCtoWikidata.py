@@ -48,7 +48,6 @@ with open("output.tsv", "w") as f1:
               statement = wbi_datatype.ItemID(value=wid1, prop_nr="P2860", references=source, if_exists="APPEND")
               s1.append(statement)
           else:
-              print("MISSING")
               s2 = []
               #Getting the metadata of the reference publication to be added to Wikidata
               r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+i)
@@ -144,7 +143,6 @@ with open("output.tsv", "w") as f1:
               if (title != ""): item.set_label(title, lang="en")
               item.set_description("Scholarly article", lang="en")
               if (len(s2)>=2):
-                print("MISSING, VOLUME 2")
                 item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
        
       if (s1 != []):
