@@ -67,7 +67,6 @@ with open("output.tsv", "w") as f1:
                           aus = a.split(", ")
                           str1 = aus[1]+' '+aus[0]
                           strn = str(n)
-                          print(str1)
                           authorqualifier = [
                             wbi_datatype.String(value=strn, prop_nr="P1545", is_qualifier=True)
                             ]
@@ -143,8 +142,10 @@ with open("output.tsv", "w") as f1:
               if (title != ""): item.set_label(title, lang="en")
               item.set_description("Scholarly article", lang="en")
               if (len(s2)>=2):
-                item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
-       
+                try:
+                  item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
+                except Exception:
+                  print("New item Not Created")
       if (s1 != []):
           #Adding Cites Work Relations to Wikidata
           item = wbi_core.ItemEngine(data = s1, item_id = wid)
