@@ -10,4 +10,4 @@ This bot uses the database of Wikidata items with DOI as retrieved by James Hare
   * Add missing *cites work* relations to Wikidata.
   * Identify the missing scholarly papers in Wikidata that are supported by OpenCitations.
   * Create Wikidata items for missing scholarly papers.
-* When using the Python code, you will be required to change <USERNAME> by the username of your bot account and <PASSWORD> by the password of your bot account. Please ensure that you do not share your credentials when reusing the source code in your repository.
+* When using the Python code, you will be required to change "<USERNAME>" by the username of your bot account and "<PASSWORD>" by the password of your bot account. Please ensure that you do not share your credentials when reusing the source code in your repository.
