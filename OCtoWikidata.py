@@ -20,7 +20,7 @@ source = [
 
 with open("output.tsv", "w") as f1:
     for x in f:
-      #Extracting the Wikidata ID and DOI of every single publication
+      #Extracting the Wikidata ID and DOI of every single publication from the list of Wikidata items with DOI
       t = x.split("\t")
       wid = t[0]
       doi = t[1][1:-2]
