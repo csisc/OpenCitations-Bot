@@ -140,7 +140,7 @@ with open("output.tsv", "w") as f1:
               #Creating new item
               item = wbi_core.ItemEngine(data = s2)
               if (title != ""): item.set_label(title, lang="en")
-              item.set_description("Scholarly article", lang="en")
+              item.set_description("scholarly article", lang="en")
               if (len(s2)>=2):
                 try:
                   item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
