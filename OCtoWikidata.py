@@ -3,11 +3,11 @@ from wikibaseintegrator import wbi_core, wbi_login, wbi_datatype
 
 #Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
-login_instance = wbi_login.Login(user=<USERNAME>, pwd=<PASSWORD>)
+login_instance = wbi_login.Login(user="OpenCitations Bot", pwd="ocbot123")
 
 
 #Opening the list of Wikidata items with DOI
-f = open("wikidata_doi.tsv", "r")
+file = open("wikidata_doi.tsv", "r")
 
 #Setting COCI as a reference for the created statements
 wid1 = ""
@@ -18,24 +18,23 @@ source = [
          ]
 
 
-with open("output.tsv", "w") as f1:
-    for x in f:
+for line in file:
       #Extracting the Wikidata ID and DOI of every single publication from the list of Wikidata items with DOI
-      t = x.split("\t")
-      wid = t[0]
-      doi = t[1][1:-2]
+      line_elements = line.split("\t")
+      wid = line_elements[0]
+      doi = line_elements[1][1:-2]
 
       #Getting the DOIs of the references for every scholarly article
       r = requests.get('https://opencitations.net/index/api/v1/references/'+doi)
       r_data = r.text
-      s = []
+      ref_dois = []
       while (r_data.find('"cited": "coci => ') >= 0):
           r_data = r_data[r_data.find('"cited": "coci => ')+18:]
-          s.append(r_data[0:r_data.find('"')])
-      s1 = []
+          ref_dois.append(r_data[0:r_data.find('"')])
 
       #Retrieving Wikidata ID for every DOI
-      for i in s:
+      statements = []
+      for i in ref_dois:
           idurl = "https://hub.toolforge.org/P356:"+i+"?format=json"
           idget = requests.get(idurl)
           idjson = idget.json()
@@ -46,14 +45,14 @@ with open("output.tsv", "w") as f1:
           #Identifying the missing cites work relations in Wikidata
           if (wid1 != ""):
               statement = wbi_datatype.ItemID(value=wid1, prop_nr="P2860", references=source, if_exists="APPEND")
-              s1.append(statement)
+              statements.append(statement)
           else:
-              s2 = []
+              new_item_statements = []
               #Getting the metadata of the reference publication to be added to Wikidata
               r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+i)
               #Adding DOI Statements for new items
               doi_r = wbi_datatype.ExternalID(value=i, prop_nr="P356", references=source)
-              s2.append(doi_r)
+              new_item_statements.append(doi_r)
               r_json = r1.json()           
               for rec in r_json:
                 try:
@@ -71,13 +70,13 @@ with open("output.tsv", "w") as f1:
                             wbi_datatype.String(value=strn, prop_nr="P1545", is_qualifier=True)
                             ]
                           author = wbi_datatype.String(value=str1, prop_nr="P2093", qualifiers=authorqualifier, references=source)
-                          s2.append(author)
+                          new_item_statements.append(author)
                       else:
                           authorqualifier = [
                             wbi_datatype.String(value=strn, prop_nr="P1545", is_qualifier=True)
                             ]
                           author = wbi_datatype.String(value=a, prop_nr="P2093", qualifiers=authorqualifier, references=source)
-                          s2.append(author)
+                          new_item_statements.append(author)
                 except KeyError:
                   author = ""
                 #Adding Publication Years for new items
@@ -85,7 +84,7 @@ with open("output.tsv", "w") as f1:
                   year = str(rec["year"])
                   if (year != ""):
                     year1 = wbi_datatype.Time(time='+'+year+'-00-00T00:00:00Z', prop_nr="P577", references=source)
-                    s2.append(year1)
+                    new_item_statements.append(year1)
                 except KeyError:
                   year = ""
                 #Extracting the titles for new items
@@ -101,7 +100,7 @@ with open("output.tsv", "w") as f1:
                       wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
                       ]
                     source1 = wbi_datatype.ItemID(value="Q53569537", prop_nr="P1433", qualifiers=sourcequalifier, references=source)
-                    s2.append(source1)
+                    new_item_statements.append(source1)
                 except KeyError:
                   sourcetitle = ""
                 #Adding Volume Number to new items
@@ -109,7 +108,7 @@ with open("output.tsv", "w") as f1:
                   volume = str(rec["volume"])
                   if (volume != ""):
                     volume1 = wbi_datatype.String(value=volume, prop_nr="P478", references=source)
-                    s2.append(volume1)
+                    new_item_statements.append(volume1)
                 except KeyError:
                   volume = ""
                 #Adding Issue Number to new items
@@ -117,7 +116,7 @@ with open("output.tsv", "w") as f1:
                   issue = str(rec["issue"])
                   if (issue != ""):
                     issue1 = wbi_datatype.String(value=issue, prop_nr="P433", references=source)
-                    s2.append(issue1)
+                    new_item_statements.append(issue1)
                 except KeyError:
                   issue = ""
                 #Adding Page Numbers to new items
@@ -125,7 +124,7 @@ with open("output.tsv", "w") as f1:
                   page = str(rec["page"])
                   if (page != ""):
                     page1 = wbi_datatype.String(value=page, prop_nr="P304", references=source)
-                    s2.append(page1)
+                    new_item_statements.append(page1)
                 except KeyError:
                   page = ""
                 #Adding Open Access Link Statements to new items
@@ -133,22 +132,22 @@ with open("output.tsv", "w") as f1:
                   oalink = str(rec["oa_link"])
                   if (oalink != ""):
                     oa = wbi_datatype.Url(value=oalink, prop_nr="P856", references=source)
-                    s2.append(oa)
+                    new_item_statements.append(oa)
                 except KeyError:
                   oalink = ""
 
               #Creating new item
-              item = wbi_core.ItemEngine(data = s2)
+              item = wbi_core.ItemEngine(data = new_item_statements)
               if (title != ""): item.set_label(title, lang="en")
               item.set_description("scholarly article", lang="en")
-              if (len(s2)>=2):
+              if (len(new_item_statements)>=2):
                 try:
                   item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
                 except Exception:
                   print("New item Not Created")
-      if (s1 != []):
+      if (statements != []):
           #Adding Cites Work Relations to Wikidata
-          item = wbi_core.ItemEngine(data = s1, item_id = wid)
+          item = wbi_core.ItemEngine(data = statements, item_id = wid)
           item.write(login_instance, edit_summary="Added from OpenCitations COCI API using OpenCitations Bot")
             
           
