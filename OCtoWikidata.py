@@ -54,11 +54,11 @@ for line in file:
               doi_r = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
               new_item_statements.append(doi_r)
               r_json = r1.json()           
-              for rec in r_json:
+              for record1 in r_json:
                 try:
                   n = 0
                   #Adding Authorship Statements for new items
-                  author = rec["author"]
+                  author = record1["author"]
                   aut = author.split("; ")
                   for a in aut:
                       n += 1
@@ -81,7 +81,7 @@ for line in file:
                   author = ""
                 #Adding Publication Years for new items
                 try:
-                  year = str(rec["year"])
+                  year = str(record1["year"])
                   if (year != ""):
                     year1 = wbi_datatype.Time(time='+'+year+'-00-00T00:00:00Z', prop_nr="P577", references=source)
                     new_item_statements.append(year1)
@@ -89,12 +89,12 @@ for line in file:
                   year = ""
                 #Extracting the titles for new items
                 try:
-                  title = str(rec["title"])
+                  title = str(record1["title"])
                 except KeyError:
                   title = ""
                 #Adding Source Titles to new items
                 try:
-                  sourcetitle = str(rec["source_title"])
+                  sourcetitle = str(record1["source_title"])
                   if (sourcetitle != ""):
                     sourcequalifier = [
                       wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
@@ -105,7 +105,7 @@ for line in file:
                   sourcetitle = ""
                 #Adding Volume Number to new items
                 try:
-                  volume = str(rec["volume"])
+                  volume = str(record1["volume"])
                   if (volume != ""):
                     volume1 = wbi_datatype.String(value=volume, prop_nr="P478", references=source)
                     new_item_statements.append(volume1)
@@ -113,7 +113,7 @@ for line in file:
                   volume = ""
                 #Adding Issue Number to new items
                 try:
-                  issue = str(rec["issue"])
+                  issue = str(record1["issue"])
                   if (issue != ""):
                     issue1 = wbi_datatype.String(value=issue, prop_nr="P433", references=source)
                     new_item_statements.append(issue1)
@@ -121,7 +121,7 @@ for line in file:
                   issue = ""
                 #Adding Page Numbers to new items
                 try:
-                  page = str(rec["page"])
+                  page = str(record1["page"])
                   if (page != ""):
                     page1 = wbi_datatype.String(value=page, prop_nr="P304", references=source)
                     new_item_statements.append(page1)
@@ -129,7 +129,7 @@ for line in file:
                   page = ""
                 #Adding Open Access Link Statements to new items
                 try:
-                  oalink = str(rec["oa_link"])
+                  oalink = str(record1["oa_link"])
                   if (oalink != ""):
                     oa = wbi_datatype.Url(value=oalink, prop_nr="P856", references=source)
                     new_item_statements.append(oa)
