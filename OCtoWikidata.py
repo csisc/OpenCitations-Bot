@@ -59,8 +59,8 @@ for line in file:
                   n = 0
                   #Adding Authorship Statements for new items
                   author = record1["author"]
-                  aut = author.split("; ")
-                  for a in aut:
+                  authorlist = author.split("; ")
+                  for a in authorlist:
                       n += 1
                       if (a.find(", ")>=0):
                           aus = a.split(", ")
