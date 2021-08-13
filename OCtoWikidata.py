@@ -34,8 +34,8 @@ for line in file:
 
       #Retrieving Wikidata ID for every DOI
       statements = []
-      for i in ref_dois:
-          idurl = "https://hub.toolforge.org/P356:"+i+"?format=json"
+      for refdoi in ref_dois:
+          idurl = "https://hub.toolforge.org/P356:"+refdoi+"?format=json"
           idget = requests.get(idurl)
           idjson = idget.json()
           try:
@@ -49,9 +49,9 @@ for line in file:
           else:
               new_item_statements = []
               #Getting the metadata of the reference publication to be added to Wikidata
-              r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+i)
+              r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+refdoi)
               #Adding DOI Statements for new items
-              doi_r = wbi_datatype.ExternalID(value=i, prop_nr="P356", references=source)
+              doi_r = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
               new_item_statements.append(doi_r)
               r_json = r1.json()           
               for rec in r_json:
