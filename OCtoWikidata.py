@@ -142,13 +142,13 @@ for line in file:
               item.set_description("scholarly article", lang="en")
               if (len(new_item_statements)>=2):
                 try:
-                  item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using OpenCitations Bot")
+                  item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
                 except Exception:
                   print("New item Not Created")
       if (statements != []):
           #Adding Cites Work Relations to Wikidata
           item = wbi_core.ItemEngine(data = statements, item_id = wid)
-          item.write(login_instance, edit_summary="Added from OpenCitations COCI API using OpenCitations Bot")
+          item.write(login_instance, edit_summary="Added from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
             
           
   
