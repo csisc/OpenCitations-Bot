@@ -3,7 +3,7 @@ from wikibaseintegrator import wbi_core, wbi_login, wbi_datatype
 
 #Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
-login_instance = wbi_login.Login(user="OpenCitations Bot", pwd="ocbot123")
+login_instance = wbi_login.Login(user=<USERNAME>, pwd=<PASSWORD>)
 
 
 #Opening the list of Wikidata items with DOI
