@@ -47,6 +47,7 @@ for line in file:
               statement = wbi_datatype.ItemID(value=wid1, prop_nr="P2860", references=source, if_exists="APPEND")
               statements.append(statement)
           else:
+              # Prepare statements for a new item
               new_item_statements = []
               #Getting the metadata of the reference publication to be added to Wikidata
               r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+refdoi)
