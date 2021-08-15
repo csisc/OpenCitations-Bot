@@ -139,10 +139,20 @@ for line in file:
                 except KeyError:
                   oalink = ""
 
-              #Creating new item
+              #Preparing the batch to create a new item
               item = wbi_core.ItemEngine(data = new_item_statements)
+          
+              #Setting a description for the new Wikidata item
               if (title != ""): item.set_label(title, lang="en")
-              item.set_description("scholarly article", lang="en")
+              desc = ""
+              if (year != ""): 
+                    desc = "scholarly article published in " + year
+              else:
+                    if (sourcetitle != ""): desc = "scholarly article published in " + sourcetitle
+              if (desc == ""): desc = "scholarly article"
+              item.set_description(desc, lang="en")
+              
+              #Creating the new item
               if (len(new_item_statements)>=2):
                 try:
                   item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
