@@ -95,17 +95,38 @@ for line in file:
                   title = str(record["title"])
                 except KeyError:
                   title = ""
-                #Adding Source Titles to new items
+          
+                #Reconciling the research venue to corresponding Wikidata items
                 try:
-                  sourcetitle = str(record["source_title"])
-                  if (sourcetitle != ""):
-                    sourcequalifier = [
-                      wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
-                      ]
-                    source1 = wbi_datatype.ItemID(value="Q53569537", prop_nr="P1433", qualifiers=sourcequalifier, references=source)
-                    new_item_statements.append(source1)
+                  sourceid = str(record["source_id"])
                 except KeyError:
-                  sourcetitle = ""
+                  sourceid = ""
+                if (sourceid.find("issn")>=0):
+                  venueid = sourceid[5:14]
+                  venuewikidatareconcilel = "https://hub.toolforge.org/P236:"+venueid+"?format=json"
+                  venueget = requests.get(venuewikidatareconcilel)
+                  venuejson = venueget.json()
+                  try:
+                    sourcewikidataid = idjson["origin"]["qid"]
+                  except KeyError:
+                    sourcewikidataid = ""
+                  if (sourcewikidataid != ""):
+                    sourcewid1 = wbi_datatype.ItemID(value=sourcewikidataid, prop_nr="P1433", references=source)
+                    new_item_statements.append(source1)
+          
+                #Adding Source Titles to new items
+                if (sourcewikidataid == ""):
+                    try:
+                      sourcetitle = str(record["source_title"])
+                      if (sourcetitle != ""):
+                        sourcequalifier = [
+                          wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
+                          ]
+                        source1 = wbi_datatype.ItemID(value="Q53569537", prop_nr="P1433", qualifiers=sourcequalifier, references=source)
+                        new_item_statements.append(source1)
+                    except KeyError:
+                      sourcetitle = ""
+                
                 #Adding Volume Number to new items
                 try:
                   volume = str(record["volume"])
