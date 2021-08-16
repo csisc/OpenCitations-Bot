@@ -17,7 +17,8 @@ wid1 = ""
 source = [
           [
             wbi_datatype.ItemID(value="Q107507940", prop_nr="P248", is_reference=True, if_exists="APPEND"),
-            wbi_datatype.Time(time=datestr, prop_nr="P813", is_reference=True, if_exists="APPEND")
+            wbi_datatype.Time(time=datestr, prop_nr="P813", is_reference=True, if_exists="APPEND"),
+            wbi_datatype.Url(value="https://opencitations.net/index/coci/api/v1", prop_nr="P854", is_reference=True, if_exists="APPEND")
           ]
          ]
 
