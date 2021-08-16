@@ -107,7 +107,7 @@ for line in file:
                   venueget = requests.get(venuewikidatareconcilel)
                   venuejson = venueget.json()
                   try:
-                    sourcewikidataid = idjson["origin"]["qid"]
+                    sourcewikidataid = venuejson["origin"]["qid"]
                   except KeyError:
                     sourcewikidataid = ""
                   if (sourcewikidataid != ""):
