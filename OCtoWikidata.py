@@ -112,7 +112,7 @@ for line in file:
                     sourcewikidataid = ""
                   if (sourcewikidataid != ""):
                     sourcewid1 = wbi_datatype.ItemID(value=sourcewikidataid, prop_nr="P1433", references=source)
-                    new_item_statements.append(source1)
+                    new_item_statements.append(sourcewid1)
           
                 #Adding Source Titles to new items
                 if (sourcewikidataid == ""):
