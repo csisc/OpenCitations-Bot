@@ -1,10 +1,13 @@
 import requests
 from wikibaseintegrator import wbi_core, wbi_login, wbi_datatype
+import datetime
 
 #Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
 login_instance = wbi_login.Login(user=<USERNAME>, pwd=<PASSWORD>)
 
+#Getting the current date
+datestr = '+'+str(datetime.datetime.now())[0:10]+'T00:00:00Z'
 
 #Opening the list of Wikidata items with DOI
 file = open("wikidata_doi.tsv", "r")
@@ -13,7 +16,8 @@ file = open("wikidata_doi.tsv", "r")
 wid1 = ""
 source = [
           [
-            wbi_datatype.ItemID(value="Q107507940", prop_nr="P248", is_reference=True, if_exists="APPEND")
+            wbi_datatype.ItemID(value="Q107507940", prop_nr="P248", is_reference=True, if_exists="APPEND"),
+            wbi_datatype.Time(time=datestr, prop_nr="P813", is_reference=True, if_exists="APPEND")
           ]
          ]
 
