@@ -84,12 +84,12 @@ for line in file:
               # Prepare statements for a new item
               new_item_statements = []
               #Getting the metadata of the reference publication to be added to Wikidata
-              r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+refdoi)
+              response = requests.get("https://opencitations.net/index/api/v1/metadata/"+refdoi)
               #Adding DOI Statements for new items
               doi_statement = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
               new_item_statements.append(doi_statement)
-              r_json = r1.json()           
-              for record in r_json:
+              opencitations_json = response.json()           
+              for record in opencitations_json:
                 try:
                   n = 0
                   #Adding Authorship Statements for new items
