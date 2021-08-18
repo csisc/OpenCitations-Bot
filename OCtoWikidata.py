@@ -2,6 +2,33 @@ import requests
 from wikibaseintegrator import wbi_core, wbi_login, wbi_datatype
 import datetime
 
+# Pseudo code
+# (first download the 280 MB data from James Hare linked in the README) 
+# log in to Wikidata
+# get current date
+# prepare reference to be used later on statements
+# open the data-file
+# for each line:
+## parse the line and extract wikidata_item_id and DOI
+## lookup the DOI in COCI
+## parse the COCI data
+## for each reference in the COCI data:
+### check via hub if DOI is already in Wikidata
+### if found:
+#### add reference as "cited work"
+### else:
+##### create new item from the COCI data
+##### add author statement
+##### add publication year statement
+##### add research venu aka published in statement
+##### add source title statement
+##### add volume statement
+##### add issue statement
+##### add page numbers statement
+##### add open access link statement
+##### add set description statement
+## upload to Wikidata
+
 #Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
 login_instance = wbi_login.Login(user=<USERNAME>, pwd=<PASSWORD>)
