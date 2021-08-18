@@ -40,7 +40,7 @@ datestr = '+'+str(datetime.datetime.now())[0:10]+'T00:00:00Z'
 file = open("wikidata_doi.tsv", "r")
 
 #Setting COCI as a reference for the created statements
-wid1 = ""
+cit_wikidata_id = ""
 source = [
           [
             wbi_datatype.ItemID(value="Q107507940", prop_nr="P248", is_reference=True, if_exists="APPEND"),
@@ -73,12 +73,12 @@ for line in file:
           idget = requests.get(idurl)
           idjson = idget.json()
           try:
-              wid1 = idjson["origin"]["qid"]
+              cit_wikidata_id = idjson["origin"]["qid"]
           except KeyError:
-              wid1 = ""
+              cit_wikidata_id = ""
           #Identifying the missing cites work relations in Wikidata
-          if (wid1 != ""):
-              statement = wbi_datatype.ItemID(value=wid1, prop_nr="P2860", references=source, if_exists="APPEND")
+          if (cit_wikidata_id != ""):
+              statement = wbi_datatype.ItemID(value=cit_wikidata_id, prop_nr="P2860", references=source, if_exists="APPEND")
               statements.append(statement)
           else:
               # Prepare statements for a new item
