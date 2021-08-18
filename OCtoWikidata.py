@@ -86,8 +86,8 @@ for line in file:
               #Getting the metadata of the reference publication to be added to Wikidata
               r1 = requests.get("https://opencitations.net/index/api/v1/metadata/"+refdoi)
               #Adding DOI Statements for new items
-              doi_r = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
-              new_item_statements.append(doi_r)
+              doi_statement = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
+              new_item_statements.append(doi_statement)
               r_json = r1.json()           
               for record in r_json:
                 try:
