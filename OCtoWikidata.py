@@ -44,11 +44,13 @@ wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csi
 # Get environment variables
 USER = os.getenv('WIKIDATA_USER')
 PASSWORD = os.environ.get('WIKIDATA_PASSWORD')
-DEBUG = os.environ.get('DEBUG', False) == 1
+DEBUG = os.environ.get('DEBUG', False) == '1'
+STARTING_LINE = int(os.environ.get('STARTING_LINE', 0))
 
 # Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
 login_instance = wbi_login.Login(user=USER, pwd=PASSWORD)
+# login_instance = wbi_login.Login(client_id='891a2579f24c4ec58283fa4c9413fed0', client_secret='d2e05b183783c3ce31185eb9c2abbd1c95cebbf9')
 
 # Getting the current date
 datestr = '+' + str(datetime.datetime.now())[0:10] + 'T00:00:00Z'
@@ -66,7 +68,11 @@ source = [
     ]
 ]
 
-for line in file:
+for i, line in enumerate(file):
+    # Skipping lines
+    if i < STARTING_LINE:
+        continue
+
     # Extracting the Wikidata ID and DOI of every single publication from the list of Wikidata items with DOI
     line_elements = line.split("\t")
     wid = line_elements[0]
@@ -223,7 +229,7 @@ for line in file:
                     oalink = ""
 
             # Preparing the batch to create a new item
-            item = wbi_core.ItemEngine(data=new_item_statements)
+            item = wbi_core.ItemEngine(data=new_item_statements, debug=DEBUG)
 
             # Setting a description for the new Wikidata item
             if title != "":
@@ -241,7 +247,9 @@ for line in file:
                 try:
                     item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
                 except Exception:
-                    print("New item Not Created")
+                    print("New item not created.")
+                    if DEBUG:
+                        raise
     if statements:
         # Adding Cites Work Relations to Wikidata
         item = wbi_core.ItemEngine(data=statements, item_id=wid)
