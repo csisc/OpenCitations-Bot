@@ -32,6 +32,11 @@ from wikibaseintegrator.wbi_config import config as wbi_config
 ##### add set description statement
 ## upload to Wikidata
 
+# Check if dependencies exist
+if not os.path.isfile('wikidata_doi.tsv'):
+    print('ERROR: You need to manually download the file wikidata_doi.tsv. Instructions in README.md.')
+    exit(-1)
+
 # Setting Custom User Agent
 __version__ = 'dev'
 wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csisc/OpenCitations-Bot)".format(__version__)
@@ -39,6 +44,7 @@ wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csi
 # Get environment variables
 USER = os.getenv('WIKIDATA_USER')
 PASSWORD = os.environ.get('WIKIDATA_PASSWORD')
+DEBUG = os.environ.get('DEBUG', False) == 1
 
 # Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
@@ -66,13 +72,16 @@ for line in file:
     wid = line_elements[0]
     doi = line_elements[1][1:-2]
 
+    if DEBUG:
+        print('Doing {}'.format(doi))
+
     # Getting the references for every scholarly article
     r = requests.get('https://opencitations.net/index/api/v1/references/' + doi)
     r_data = r.text
     ref_dois = []
 
     # Extracting the DOIs of the references for every scholarly article
-    while (r_data.find('"cited": "coci => ') >= 0):
+    while r_data.find('"cited": "coci => ') >= 0:
         r_data = r_data[r_data.find('"cited": "coci => ') + 18:]
         ref_dois.append(r_data[0:r_data.find('"')])
 
@@ -82,12 +91,12 @@ for line in file:
         idurl = "https://hub.toolforge.org/P356:" + refdoi + "?format=json"
         idget = requests.get(idurl)
         idjson = idget.json()
-        try:
+        if 'origin' in idjson and 'qid' in idjson['origin']:
             cit_wikidata_id = idjson["origin"]["qid"]
-        except KeyError:
+        else:
             cit_wikidata_id = ""
         # Identifying the missing cites work relations in Wikidata
-        if (cit_wikidata_id != ""):
+        if cit_wikidata_id != "":
             statement = wbi_datatype.ItemID(value=cit_wikidata_id, prop_nr="P2860", references=source, if_exists="APPEND")
             statements.append(statement)
         else:
@@ -100,17 +109,17 @@ for line in file:
             new_item_statements.append(doi_statement)
             opencitations_json = response.json()
             for record in opencitations_json:
-                try:
+                if 'author' in record:
                     n = 0
                     # Adding Authorship Statements for new items
                     author = record["author"]
                     authorlist = author.split("; ")
                     for a in authorlist:
                         n += 1
-                        if (a.find(", ") >= 0):
+                        strn = str(n)
+                        if a.find(", ") >= 0:
                             aus = a.split(", ")
                             str1 = aus[1] + ' ' + aus[0]
-                            strn = str(n)
                             authorqualifier = [
                                 wbi_datatype.String(value=strn, prop_nr="P1545", is_qualifier=True)
                             ]
@@ -122,106 +131,110 @@ for line in file:
                             ]
                             author = wbi_datatype.String(value=a, prop_nr="P2093", qualifiers=authorqualifier, references=source)
                             new_item_statements.append(author)
-                except KeyError:
+                else:
                     author = ""
                 # Adding Publication Years for new items
-                try:
+                if 'year' in record:
                     year = str(record["year"])
-                    if (year != ""):
+                    if year != "":
                         year1 = wbi_datatype.Time(time='+' + year + '-00-00T00:00:00Z', prop_nr="P577", precision=9, references=source)
                         new_item_statements.append(year1)
-                except KeyError:
+                else:
                     year = ""
+
                 # Extracting the titles for new items
-                try:
+                if 'title' in record:
                     title = str(record["title"])
-                except KeyError:
-                    title = ""
+                else:
+                    title = ''
 
                 # Reconciling the research venue to corresponding Wikidata items
-                try:
+                if 'source_id' in record:
                     sourceid = str(record["source_id"])
-                except KeyError:
+                else:
                     sourceid = ""
-                if (sourceid.find("issn") >= 0):
+
+                if sourceid.find("issn") >= 0:
                     venueid = sourceid[5:14]
                     venuewikidatareconcilel = "https://hub.toolforge.org/P236:" + venueid + "?format=json"
                     venueget = requests.get(venuewikidatareconcilel)
                     venuejson = venueget.json()
-                    try:
+                    if 'origin' in venuejson and 'qid' in venuejson['origin']:
                         sourcewikidataid = venuejson["origin"]["qid"]
-                    except KeyError:
-                        sourcewikidataid = ""
-                    if (sourcewikidataid != ""):
                         sourcewid1 = wbi_datatype.ItemID(value=sourcewikidataid, prop_nr="P1433", references=source)
                         new_item_statements.append(sourcewid1)
+                    else:
+                        sourcewikidataid = ""
 
-                # Adding Source Titles to new items
-                if (sourcewikidataid == ""):
-                    try:
-                        sourcetitle = str(record["source_title"])
-                        if (sourcetitle != ""):
-                            sourcequalifier = [
-                                wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
-                            ]
-                            source1 = wbi_datatype.ItemID(value="Q53569537", prop_nr="P1433", qualifiers=sourcequalifier, references=source)
-                            new_item_statements.append(source1)
-                    except KeyError:
-                        sourcetitle = ""
+                    # Adding Source Titles to new items
+                    if sourcewikidataid == "":
+                        if 'source_title' in record:
+                            sourcetitle = str(record["source_title"])
+                            if sourcetitle != "":
+                                sourcequalifier = [
+                                    wbi_datatype.String(value=sourcetitle, prop_nr="P1932", is_qualifier=True)
+                                ]
+                                source1 = wbi_datatype.ItemID(value="Q53569537", prop_nr="P1433", qualifiers=sourcequalifier, references=source)
+                                new_item_statements.append(source1)
+                        else:
+                            sourcetitle = ""
 
                 # Adding Volume Number to new items
-                try:
+                if 'volume' in record:
                     volume = str(record["volume"])
-                    if (volume != ""):
+                    if volume != "":
                         volume1 = wbi_datatype.String(value=volume, prop_nr="P478", references=source)
                         new_item_statements.append(volume1)
-                except KeyError:
+                else:
                     volume = ""
+
                 # Adding Issue Number to new items
-                try:
+                if 'issue' in record:
                     issue = str(record["issue"])
-                    if (issue != ""):
+                    if issue != "":
                         issue1 = wbi_datatype.String(value=issue, prop_nr="P433", references=source)
                         new_item_statements.append(issue1)
-                except KeyError:
+                else:
                     issue = ""
+
                 # Adding Page Numbers to new items
-                try:
+                if 'page' in record:
                     page = str(record["page"])
-                    if (page != ""):
+                    if page != "":
                         page1 = wbi_datatype.String(value=page, prop_nr="P304", references=source)
                         new_item_statements.append(page1)
-                except KeyError:
+                else:
                     page = ""
+
                 # Adding Open Access Link Statements to new items
-                try:
+                if 'oa_link' in record:
                     oalink = str(record["oa_link"])
-                    if (oalink != ""):
+                    if oalink != "":
                         oa = wbi_datatype.Url(value=oalink, prop_nr="P856", references=source)
                         new_item_statements.append(oa)
-                except KeyError:
+                else:
                     oalink = ""
 
             # Preparing the batch to create a new item
             item = wbi_core.ItemEngine(data=new_item_statements)
 
             # Setting a description for the new Wikidata item
-            if (title != ""): item.set_label(title, lang="en")
+            if title != "": item.set_label(title, lang="en")
             desc = ""
-            if (year != ""):
+            if year != "":
                 desc = "scholarly article published in " + year
             else:
-                if (sourcetitle != ""): desc = "scholarly article published in " + sourcetitle
-            if (desc == ""): desc = "scholarly article"
+                if sourcetitle != "": desc = "scholarly article published in " + sourcetitle
+            if desc == "": desc = "scholarly article"
             item.set_description(desc, lang="en")
 
             # Creating the new item
-            if (len(new_item_statements) >= 2):
+            if len(new_item_statements) >= 2:
                 try:
                     item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
                 except Exception:
                     print("New item Not Created")
-    if (statements != []):
+    if statements:
         # Adding Cites Work Relations to Wikidata
         item = wbi_core.ItemEngine(data=statements, item_id=wid)
         item.write(login_instance, edit_summary="Added from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
