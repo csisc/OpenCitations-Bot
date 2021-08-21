@@ -6,7 +6,7 @@ This is a bot created by Houcemeddine Turki, member of Data Engineering and Sema
 This bot parses the exhaustive list of James Hare showing Wikidata items with DOI as of August 20, 2020 (https://figshare.com/articles/dataset/Wikidata_items_with_DOIs_2020-08-20/13063985). Then, it uses the REST API of OpenCitations to retrieve the DOI of the references and citing works of each publication. Finally, the obtained DOI are converted to Wikidata ID using the Wikidata Hub and the final output is automatically added to Wikidata using QuickStatements API. The source code of this bot is build using Python 3.5. Such a process does not cause any legal concern as Wikidata and OpenCitations scholarly knowledge graphs are both issued under CC0 License.
 ## Source Codes
 **OCtoWikidata**: Uses OpenCitations COCI REST API (https://opencitations.net/index/api/v1/) and Wikibase Integrator (https://github.com/LeMyst/WikibaseIntegrator) to: 
- * Find the DOIs of the references of scholarly papers indexed in the Wikidata Knowledge Graph.
- * Add missing *cites work* relations to Wikidata.
- * Identify the missing scholarly papers in Wikidata that are supported by OpenCitations.
- * Create Wikidata items for missing scholarly papers.
+* Find the DOIs of the references of scholarly papers indexed in the Wikidata Knowledge Graph.
+* Add missing *cites work* relations to Wikidata.
+* Identify the missing scholarly papers in Wikidata that are supported by OpenCitations.
+* Create Wikidata items for missing scholarly papers.
