@@ -1,4 +1,5 @@
 import requests
+from wikibaseintegrator.wbi_config import config as wbi_config
 from wikibaseintegrator import wbi_core, wbi_login, wbi_datatype
 import datetime
 
@@ -28,6 +29,9 @@ import datetime
 ##### add open access link statement
 ##### add set description statement
 ## upload to Wikidata
+
+#Setting Custom User Agent 
+wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csisc/OpenCitations-Bot)".format(__version__)
 
 #Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
