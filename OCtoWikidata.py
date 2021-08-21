@@ -102,12 +102,19 @@ for line in file:
         else:
             # Prepare statements for a new item
             new_item_statements = []
+
             # Getting the metadata of the reference publication to be added to Wikidata
             response = requests.get("https://opencitations.net/index/api/v1/metadata/" + refdoi)
+
             # Adding DOI Statements for new items
             doi_statement = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
             new_item_statements.append(doi_statement)
             opencitations_json = response.json()
+
+            title = ''
+            year = ''
+            sourcetitle = ''
+
             for record in opencitations_json:
                 if 'author' in record:
                     n = 0
@@ -219,13 +226,14 @@ for line in file:
             item = wbi_core.ItemEngine(data=new_item_statements)
 
             # Setting a description for the new Wikidata item
-            if title != "": item.set_label(title, lang="en")
-            desc = ""
+            if title != "":
+                item.set_label(title, lang="en")
             if year != "":
                 desc = "scholarly article published in " + year
+            elif sourcetitle != "":
+                desc = "scholarly article published in " + sourcetitle
             else:
-                if sourcetitle != "": desc = "scholarly article published in " + sourcetitle
-            if desc == "": desc = "scholarly article"
+                desc = "scholarly article"
             item.set_description(desc, lang="en")
 
             # Creating the new item
