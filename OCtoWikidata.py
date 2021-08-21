@@ -44,7 +44,8 @@ wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csi
 # Get environment variables
 USER = os.getenv('WIKIDATA_USER')
 PASSWORD = os.environ.get('WIKIDATA_PASSWORD')
-DEBUG = os.environ.get('DEBUG', False) == 1
+DEBUG = os.environ.get('DEBUG', False) == '1'
+STARTING_LINE = int(os.environ.get('STARTING_LINE', 0))
 
 # Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
@@ -66,7 +67,11 @@ source = [
     ]
 ]
 
-for line in file:
+for i, line in enumerate(file):
+    # Skipping lines
+    if i < STARTING_LINE:
+        continue
+
     # Extracting the Wikidata ID and DOI of every single publication from the list of Wikidata items with DOI
     line_elements = line.split("\t")
     wid = line_elements[0]
@@ -102,12 +107,19 @@ for line in file:
         else:
             # Prepare statements for a new item
             new_item_statements = []
+
             # Getting the metadata of the reference publication to be added to Wikidata
             response = requests.get("https://opencitations.net/index/api/v1/metadata/" + refdoi)
+
             # Adding DOI Statements for new items
             doi_statement = wbi_datatype.ExternalID(value=refdoi, prop_nr="P356", references=source)
             new_item_statements.append(doi_statement)
             opencitations_json = response.json()
+
+            title = ''
+            year = ''
+            sourcetitle = ''
+
             for record in opencitations_json:
                 if 'author' in record:
                     n = 0
@@ -216,16 +228,17 @@ for line in file:
                     oalink = ""
 
             # Preparing the batch to create a new item
-            item = wbi_core.ItemEngine(data=new_item_statements)
+            item = wbi_core.ItemEngine(data=new_item_statements, debug=DEBUG)
 
             # Setting a description for the new Wikidata item
-            if title != "": item.set_label(title, lang="en")
-            desc = ""
+            if title != "":
+                item.set_label(title, lang="en")
             if year != "":
                 desc = "scholarly article published in " + year
+            elif sourcetitle != "":
+                desc = "scholarly article published in " + sourcetitle
             else:
-                if sourcetitle != "": desc = "scholarly article published in " + sourcetitle
-            if desc == "": desc = "scholarly article"
+                desc = "scholarly article"
             item.set_description(desc, lang="en")
 
             # Creating the new item
@@ -233,7 +246,9 @@ for line in file:
                 try:
                     item.write(login_instance, edit_summary="Uploaded from OpenCitations COCI API using [[User:OpenCitations Bot|OpenCitations Bot]]")
                 except Exception:
-                    print("New item Not Created")
+                    print("New item not created.")
+                    if DEBUG:
+                        raise
     if statements:
         # Adding Cites Work Relations to Wikidata
         item = wbi_core.ItemEngine(data=statements, item_id=wid)
