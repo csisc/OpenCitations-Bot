@@ -118,7 +118,7 @@ for line in file:
                 try:
                   year = str(record["year"])
                   if (year != ""):
-                    year1 = wbi_datatype.Time(time='+'+year+'-00-00T00:00:00Z', prop_nr="P577", references=source)
+                    year1 = wbi_datatype.Time(time='+'+year+'-00-00T00:00:00Z', prop_nr="P577", precision=9, references=source)
                     new_item_statements.append(year1)
                 except KeyError:
                   year = ""
