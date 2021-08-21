@@ -50,7 +50,6 @@ STARTING_LINE = int(os.environ.get('STARTING_LINE', 0))
 # Logging in with Wikibase Integrator
 print("Logging in with Wikibase Integrator")
 login_instance = wbi_login.Login(user=USER, pwd=PASSWORD)
-# login_instance = wbi_login.Login(client_id='891a2579f24c4ec58283fa4c9413fed0', client_secret='d2e05b183783c3ce31185eb9c2abbd1c95cebbf9')
 
 # Getting the current date
 datestr = '+' + str(datetime.datetime.now())[0:10] + 'T00:00:00Z'
