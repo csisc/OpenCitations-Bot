@@ -31,6 +31,7 @@ import datetime
 ## upload to Wikidata
 
 #Setting Custom User Agent 
+__version__ = 'dev'
 wbi_config['USER_AGENT_DEFAULT'] = "OpenCitations-Bot/{} (https://github.com/csisc/OpenCitations-Bot)".format(__version__)
 
 #Logging in with Wikibase Integrator
