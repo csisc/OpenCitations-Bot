@@ -10,4 +10,3 @@ This bot parses the exhaustive list of James Hare showing Wikidata items with DO
   * Add missing *cites work* relations to Wikidata.
   * Identify the missing scholarly papers in Wikidata that are supported by OpenCitations.
   * Create Wikidata items for missing scholarly papers.
-* When using the Python code, you will be required to change USERNAME by the username of your bot account and PASSWORD by the password of your bot account. Please ensure that you do not share your credentials when reusing the source code in your repository.
