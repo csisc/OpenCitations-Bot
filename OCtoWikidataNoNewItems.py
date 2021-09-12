@@ -19,17 +19,6 @@ from wikibaseintegrator.wbi_config import config as wbi_config
 ### check via hub if DOI is already in Wikidata
 ### if found:
 #### add reference as "cited work"
-### else:
-##### create new item from the COCI data
-##### add author statement
-##### add publication year statement
-##### add research venu aka published in statement
-##### add source title statement
-##### add volume statement
-##### add issue statement
-##### add page numbers statement
-##### add open access link statement
-##### add set description statement
 ## upload to Wikidata
 
 # Check if dependencies exist
