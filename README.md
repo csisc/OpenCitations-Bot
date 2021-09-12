@@ -10,6 +10,7 @@ This bot parses the exhaustive list of James Hare showing Wikidata items with DO
 * Add missing *cites work* relations to Wikidata.
 * Identify the missing scholarly papers in Wikidata that are supported by OpenCitations.
 * Create Wikidata items for missing scholarly papers.
+
 **OCtoWikidataNoNewItems**: Uses OpenCitations COCI REST API (https://opencitations.net/index/api/v1/) and Wikibase Integrator (https://github.com/LeMyst/WikibaseIntegrator) to: 
 * Find the DOIs of the references of scholarly papers indexed in the Wikidata Knowledge Graph.
 * Add missing *cites work* relations to existing Wikidata items.
